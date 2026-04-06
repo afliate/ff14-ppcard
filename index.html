@@ -1,89 +1,128 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>My Character</title>
+<meta charset="UTF-8">
+<title>캐릭터 시트 제작기</title>
 
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      color: white;
-      font-family: sans-serif;
-    }
+<style>
+  body {
+    margin: 0;
+    background: black;
+    color: white;
+    font-family: sans-serif;
+    display: flex;
+  }
 
-    .card {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-    }
+  .panel {
+    width: 30%;
+    padding: 20px;
+    background: #111;
+  }
 
-    .bg {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: brightness(0.5);
-    }
+  .card {
+    position: relative;
+    width: 70%;
+    height: 100vh;
+    overflow: hidden;
+  }
 
-    .content {
-      position: absolute;
-      bottom: 50px;
-      left: 50px;
-    }
+  .bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.5);
+  }
 
-    h1 {
-      font-size: 60px;
-      margin: 0;
-    }
+  .content {
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+  }
 
-    .dot {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      border: 1px solid white;
-      border-radius: 50%;
-      margin-right: 5px;
-    }
+  h1 {
+    font-size: 60px;
+    margin: 0;
+  }
 
-    .filled {
-      background: white;
-    }
+  .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 1px solid white;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
 
-    .tag {
-      display: inline-block;
-      border: 1px solid white;
-      padding: 5px 10px;
-      margin-right: 5px;
-      margin-top: 10px;
-    }
-  </style>
+  .filled {
+    background: white;
+  }
+
+  input {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 5px;
+  }
+</style>
 </head>
 
 <body>
 
+<!-- 입력창 -->
+<div class="panel">
+  <h2>시트 설정</h2>
+
+  이름:
+  <input id="nameInput" placeholder="캐릭터 이름">
+
+  전투력 (1~5):
+  <input id="powerInput" type="number" min="1" max="5">
+
+  태그:
+  <input id="tagInput" placeholder="예: RT">
+
+  <button onclick="updateCard()">적용</button>
+</div>
+
+<!-- 카드 -->
 <div class="card">
   <img class="bg" src="character.jpg">
 
   <div class="content">
-    <h1>내 캐릭터</h1>
+    <h1 id="name">캐릭터</h1>
 
-    <div>
-      전투:
-      <span class="dot filled"></span>
-      <span class="dot filled"></span>
-      <span class="dot filled"></span>
-      <span class="dot"></span>
-      <span class="dot"></span>
-    </div>
+    <div id="stats"></div>
 
-    <div>
-      <span class="tag">RT</span>
-      <span class="tag">BL</span>
-    </div>
+    <div id="tags"></div>
   </div>
 </div>
+
+<script>
+function updateCard() {
+  // 이름
+  document.getElementById("name").innerText =
+    document.getElementById("nameInput").value;
+
+  // 전투력
+  let power = document.getElementById("powerInput").value;
+  let dots = "";
+
+  for (let i = 0; i < 5; i++) {
+    if (i < power) {
+      dots += '<span class="dot filled"></span>';
+    } else {
+      dots += '<span class="dot"></span>';
+    }
+  }
+
+  document.getElementById("stats").innerHTML = "전투: " + dots;
+
+  // 태그
+  let tag = document.getElementById("tagInput").value;
+  document.getElementById("tags").innerHTML =
+    '<span class="dot">' + tag + '</span>';
+}
+</script>
 
 </body>
 </html>
