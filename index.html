@@ -58,6 +58,14 @@
     background: white;
   }
 
+  .tag {
+    display: inline-block;
+    border: 1px solid white;
+    padding: 5px 10px;
+    margin-right: 5px;
+    margin-top: 5px;
+  }
+
   input {
     width: 100%;
     margin-bottom: 10px;
@@ -68,43 +76,43 @@
 
 <body>
 
-<!-- 입력창 -->
+<!-- 입력 패널 -->
 <div class="panel">
-  <h2>시트 설정</h2>
+  <h2>파이널 판타지 14 캐릭터 시트 제작기</h2>
 
   이름:
-  <input id="nameInput" placeholder="캐릭터 이름">
+  <input id="nameInput" oninput="updateCard()" placeholder="캐릭터 이름">
 
-  전투력 (1~5):
-  <input id="powerInput" type="number" min="1" max="5">
+  전투력:
+  <input id="powerInput" type="range" min="0" max="5" oninput="updateCard()">
 
-  태그:
-  <input id="tagInput" placeholder="예: RT">
+  태그 (쉼표로 구분):
+  <input id="tagInput" oninput="updateCard()" placeholder="RT, BL, HL">
 
-  <button onclick="updateCard()">적용</button>
+  이미지 URL:
+  <input id="imgInput" oninput="updateCard()" placeholder="이미지 링크">
 </div>
 
 <!-- 카드 -->
 <div class="card">
-  <img class="bg" src="character.jpg">
+  <img class="bg" id="bgImage" src="">
 
   <div class="content">
     <h1 id="name">캐릭터</h1>
-
     <div id="stats"></div>
-
     <div id="tags"></div>
   </div>
 </div>
 
 <script>
-function updateCard() {
+function updateCard() { //  전체 업데이트 담당
+
   // 이름
   document.getElementById("name").innerText =
-    document.getElementById("nameInput").value;
+    document.getElementById("nameInput").value || "캐릭터";
 
   // 전투력
-  let power = document.getElementById("powerInput").value;
+  let power = Number(document.getElementById("powerInput").value) || 0;
   let dots = "";
 
   for (let i = 0; i < 5; i++) {
@@ -117,10 +125,23 @@ function updateCard() {
 
   document.getElementById("stats").innerHTML = "전투: " + dots;
 
-  // 태그
-  let tag = document.getElementById("tagInput").value;
-  document.getElementById("tags").innerHTML =
-    '<span class="dot">' + tag + '</span>';
+  // 태그 여러 개
+  let tags = document.getElementById("tagInput").value.split(",");
+  let tagHTML = "";
+
+  tags.forEach(tag => {
+    if (tag.trim() !== "") {
+      tagHTML += '<span class="tag">' + tag.trim() + '</span>';
+    }
+  });
+
+  document.getElementById("tags").innerHTML = tagHTML;
+
+  // 이미지
+  let img = document.getElementById("imgInput").value;
+  if (img) {
+    document.getElementById("bgImage").src = img;
+  }
 }
 </script>
 
