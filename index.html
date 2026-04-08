@@ -235,7 +235,53 @@
   background: white;
   color: black;
 }
-  
+  .section {
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #222;
+}
+
+.section h3 {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-bottom: 8px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.actions button {
+  padding: 6px;
+  background: #222;
+  border: 1px solid #444;
+  color: white;
+  cursor: pointer;
+}
+  .job-category {
+  margin-bottom: 10px;
+}
+
+.job-title {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+
+.job-subtitle {
+  font-size: 11px;
+  opacity: 0.6;
+  margin: 4px 0;
+}
+
+.job-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
 </style>
 </head>
 
@@ -245,35 +291,54 @@
 <div class="panel">
   <h2>파이널 판타지 14 캐릭터 시트 제작기</h2>
 
-<label>레이아웃</label>
+  <!-- ⭐ 레이아웃 -->
+  <div class="section">
+    <label>레이아웃</label>
+    <div class="layout-buttons">
+      <button class="layout-btn active" onclick="setLayout('vertical')">세로형</button>
+      <button class="layout-btn" onclick="setLayout('horizontal')">가로형</button>
+    </div>
+  </div>
 
-<div class="layout-buttons">
-  <button class="layout-btn active" onclick="setLayout('vertical')">세로형</button>
-  <button class="layout-btn" onclick="setLayout('horizontal')">가로형</button>
-</div>
+  <!-- ⭐ 기본 정보 -->
+  <div class="section">
+    <h3>기본 정보</h3>
 
-<label>잡지 이름</label>
-<input id="titleInput" oninput="updateTitle()" placeholder="EORZEAN">
+    <label>잡지 이름</label>
+    <input id="titleInput" oninput="updateTitle()" placeholder="EORZEAN">
 
-<label>이름</label>
-<input id="nameInput" oninput="updateCard()" placeholder="캐릭터 이름">
+    <label>이름</label>
+    <input id="nameInput" oninput="updateCard()" placeholder="캐릭터 이름">
 
-<label>전투력</label>
-<input id="powerInput" type="range" min="0" max="5" oninput="updateCard()">
+    <label>전투력</label>
+    <input id="powerInput" type="range" min="0" max="5" oninput="updateCard()">
+  </div>
 
-<label>이미지 업로드</label>
-<input type="file" id="imgInput" accept="image/*" onchange="loadImage(event)">
+  <!-- ⭐ 이미지 -->
+  <div class="section">
+    <h3>이미지</h3>
+    <input type="file" id="imgInput" accept="image/*" onchange="loadImage(event)">
+  </div>
 
-<h3>직업 선택</h3>
-<div id="jobSelect"></div>
+  <!-- ⭐ 직업 -->
+  <div class="section">
+    <h3>직업 선택</h3>
+    <div id="jobSelect"></div>
+  </div>
 
-<button onclick="selectAllJobs()">전체 선택</button>
-<button onclick="clearJobs()">전체 해제</button>
+  <!-- ⭐ 태그 -->
+  <div class="section">
+    <h3>태그</h3>
+    <input id="tagInput" oninput="updateCard()" placeholder="RT, BL, HL">
+  </div>
 
-<label>태그 (쉼표)</label>
-<input id="tagInput" oninput="updateCard()" placeholder="RT, BL, HL">
+  <!-- ⭐ 액션 -->
+  <div class="section actions">
+    <button onclick="selectAllJobs()">전체 선택</button>
+    <button onclick="clearJobs()">전체 해제</button>
+    <button onclick="saveImage()">이미지 저장</button>
+  </div>
 
-<button onclick="saveImage()">이미지 저장</button>
 </div>
 
  <!-- 카드 -->
@@ -400,14 +465,17 @@ function renderJobSelect() {
   let html = "";
 
   for (let category in jobCategories) {
-    html += `<h4>${category}</h4>`;
+
+    html += `<div class="job-category">`;
+    html += `<div class="job-title">${category}</div>`;
 
     let data = jobCategories[category];
 
-    // 전투
     if (typeof data === "object" && !Array.isArray(data)) {
+
       for (let sub in data) {
-        html += `<div>${sub}</div>`;
+        html += `<div class="job-subtitle">${sub}</div>`;
+        html += `<div class="job-row">`;
 
         data[sub].forEach(job => {
           let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
@@ -419,11 +487,13 @@ function renderJobSelect() {
                  id="select-${job}">
           `;
         });
-      }
-    }
 
-    // 제작 / 채집
-    else {
+        html += `</div>`;
+      }
+
+    } else {
+      html += `<div class="job-row">`;
+
       data.forEach(job => {
         let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
 
@@ -434,12 +504,15 @@ function renderJobSelect() {
                id="select-${job}">
         `;
       });
+
+      html += `</div>`;
     }
+
+    html += `</div>`;
   }
 
   document.getElementById("jobSelect").innerHTML = html;
 }
-
 
 // ⭐ 선택된 UI 표시
 function updateSelectionUI() {
