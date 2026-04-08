@@ -130,7 +130,7 @@ function updateCard() { //  전체 업데이트 담당
 
   document.getElementById("stats").innerHTML = "전투: " + dots;
 
-  // 태그 여러 개
+  // 태그
   let tags = document.getElementById("tagInput").value.split(",");
   let tagHTML = "";
 
@@ -142,28 +142,25 @@ function updateCard() { //  전체 업데이트 담당
 
   document.getElementById("tags").innerHTML = tagHTML;
 
-  // 이미지
-  let img = document.getElementById("imgInput").value;
-  if (img) {
-    document.getElementById("bgImage").src = img;
-  }
-// ⭐ 직업 아이콘 여러 개
-let jobs = document.getElementById("jobInput").value
-  .split(",")
-  .map(j => j.trim().toLowerCase());
+  // 직업 아이콘
+  let jobs = document.getElementById("jobInput").value
+    .split(",")
+    .map(j => j.trim().toLowerCase());
 
-let jobHTML = "";
+  let jobHTML = "";
 
-jobs.forEach(job => {
-  if (job !== "") {
-    let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
-    jobHTML += `<img src="${path}" style="width:40px; filter: invert(1);">`;
-  }
-});
+  jobs.forEach(job => {
+    if (job !== "") {
+      let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
+      jobHTML += `<img src="${path}" style="width:40px; filter: invert(1);">`;
+    }
+  });
 
-document.getElementById("job").innerHTML = jobHTML;
+  document.getElementById("job").innerHTML = jobHTML;
+}
 
-  function loadImage(event) {
+// ⭐⭐ 여기로 빼야 함 (핵심)
+function loadImage(event) {
   let file = event.target.files[0];
 
   if (file) {
@@ -175,7 +172,6 @@ document.getElementById("job").innerHTML = jobHTML;
 
     reader.readAsDataURL(file);
   }
-}
 }
 </script>
 
