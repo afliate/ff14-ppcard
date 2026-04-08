@@ -17,7 +17,7 @@
   }
 
   .panel {
-    width: 30%;
+    width: 20%;
     padding: 20px;
     background: #111;
   }
@@ -89,6 +89,7 @@
 }
 
   #job {
+  z-index: 10;
   position: absolute;
   left: 20px;
   bottom: 50px;
@@ -101,7 +102,7 @@
   position: absolute;
   top: 20px;
   left: 50px;
-  font-size: 80px;
+  font-size: 6vw;
   font-weight: bold;
 }
 .content {
@@ -129,6 +130,23 @@
   background: rgba(255, 0, 0, 0.7);
   padding: 5px 10px;
 }
+  /* 세로형 */
+.card.vertical {
+  width: 1080px;
+  height: 1920px;
+}
+
+/* 가로형 */
+.card.horizontal {
+  width: 1920px;
+  height: 1080px;
+}
+  .bg {
+  object-fit: cover;
+}
+.horizontal .bg {
+  object-position: center top;
+}
 </style>
 </head>
 
@@ -137,6 +155,15 @@
  <!-- 입력 패널 -->
 <div class="panel">
   <h2>파이널 판타지 14 캐릭터 시트 제작기</h2>
+
+  레이아웃:
+<select id="layoutMode" onchange="changeLayout()">
+  <option value="vertical">세로형</option>
+  <option value="horizontal">가로형</option>
+</select>
+
+ 잡지 이름:
+ <input id="titleInput" oninput="updateTitle()" placeholder="LALAFELL">
   
   이름:
   <input id="nameInput" oninput="updateCard()" placeholder="캐릭터 이름">
@@ -183,13 +210,13 @@
 
 // ⭐ 1. 직업 데이터 (맨 위)
 const jobCategories = {
-  "전투": [
-    "pld","war","drk","gnb",
-    "whm","sch","ast","sge",
-    "mnk","drg","nin","sam","rpr","vpr",
-    "brd","mch","dnc",
-    "blm","smn","rdm","blu","pct"
-  ],
+  "전투": {
+    "탱커": ["pld","war","drk","gnb"],
+    "힐러": ["whm","sch","ast","sge"],
+    "근딜": ["mnk","drg","nin","sam","rpr","vpr"],
+    "원딜": ["brd","mch","dnc"],
+    "마딜": ["blm","smn","rdm","pct","blu"]
+  },
   "제작": [
     "crp","bsm","arm","gsm","ltw","wvr","alc","cul"
   ],
@@ -199,7 +226,35 @@ const jobCategories = {
 };
 
 // ⭐ 2. 선택된 직업 저장
-let selectedJobs = [];
+let jobHTML = [];
+
+Object.values(jobCategories).forEach(category => {
+
+  // ⭐ 전투 (2단 구조)
+  if (typeof category === "object" && !Array.isArray(category)) {
+    Object.values(category).forEach(sub => {
+      sub.forEach(job => {
+        if (selectedJobs.includes(job)) {
+          let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
+          jobHTML.push(`<img src="${path}" style="width:30px; filter: invert(1);">`);
+        }
+      });
+    });
+  }
+
+  // ⭐ 제작 / 채집 (1단 구조)
+  else {
+    category.forEach(job => {
+      if (selectedJobs.includes(job)) {
+        let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
+        jobHTML.push(`<img src="${path}" style="width:30px; filter: invert(1);">`);
+      }
+    });
+  }
+
+});
+
+document.getElementById("job").innerHTML = jobHTML.join("");
 
 // ⭐ 3. 카드 업데이트
 function updateCard() {
@@ -260,21 +315,45 @@ function toggleJob(job) {
 
 // ⭐ 5. 선택 UI 생성
 function renderJobSelect() {
+function renderJobSelect() {
   let html = "";
 
   for (let category in jobCategories) {
     html += `<h4>${category}</h4>`;
 
-    jobCategories[category].forEach(job => {
-      let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
+    let data = jobCategories[category];
 
-      html += `
-        <img src="${path}"
-             onclick="toggleJob('${job}')"
-             class="job-select"
-             id="select-${job}">
-      `;
-    });
+    // ⭐ 전투처럼 객체일 경우
+    if (typeof data === "object" && !Array.isArray(data)) {
+      for (let sub in data) {
+        html += `<div>${sub}</div>`;
+
+        data[sub].forEach(job => {
+          let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
+
+          html += `
+            <img src="${path}"
+                 onclick="toggleJob('${job}')"
+                 class="job-select"
+                 id="select-${job}">
+          `;
+        });
+      }
+    }
+
+    // ⭐ 제작 / 채집 (배열)
+    else {
+      data.forEach(job => {
+        let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
+
+        html += `
+          <img src="${path}"
+               onclick="toggleJob('${job}')"
+               class="job-select"
+               id="select-${job}">
+        `;
+      });
+    }
   }
 
   document.getElementById("jobSelect").innerHTML = html;
@@ -324,17 +403,37 @@ function loadImage(event) {
 
   // 이미지 저장
 function saveImage() {
-  html2canvas(document.querySelector(".card")).then(canvas => {
+  html2canvas(document.querySelector(".card"), {
+    scale: 2  // ⭐ 해상도 2배
+  }).then(canvas => {
     let link = document.createElement("a");
     link.download = "character.png";
     link.href = canvas.toDataURL();
     link.click();
   });
 }
+
+function updateTitle() {
+  document.getElementById("mainTitle").innerText =
+    document.getElementById("titleInput").value || "TITLE";
+}
+
+ function changeLayout() {
+  let mode = document.getElementById("layoutMode").value;
+  let card = document.querySelector(".card");
+
+  card.classList.remove("vertical", "horizontal");
+  card.classList.add(mode);
+}
+}
+
   
 // ⭐ 10. 페이지 로드시 실행
 renderJobSelect();
 
+
+  document.querySelector(".card").classList.add("vertical");
+  
 </script>
 
 </body>
