@@ -164,10 +164,53 @@
   padding-top: 10px;
   border-top: 1px solid #444;
 }
-  .panel h3 {
-  margin-top: 20px;
+/* ⭐ 패널 섹션 정리 */
+.panel h2 {
+  margin-bottom: 10px;
+}
+
+.panel h3 {
+  margin-top: 18px;
+  margin-bottom: 6px;
   font-size: 14px;
   opacity: 0.7;
+}
+
+/* ⭐ 라벨 + 입력 묶음 */
+.panel label {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 6px;
+}
+
+/* ⭐ input 간격 + 숨통 */
+.panel input,
+.panel select {
+  width: 100%;
+  max-width: 220px;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+  box-sizing: border-box;
+}
+
+/* ⭐ 버튼 간격 */
+.panel button {
+  margin-top: 6px;
+  padding: 6px;
+  cursor: pointer;
+}
+
+/* ⭐ 직업 선택 영역 숨통 */
+#jobSelect {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ⭐ 구분선 느낌 */
+.panel {
+  border-right: 1px solid #222;
 }
 </style>
 </head>
@@ -178,38 +221,34 @@
 <div class="panel">
   <h2>파이널 판타지 14 캐릭터 시트 제작기</h2>
 
-  레이아웃:
+<label>레이아웃</label>
 <select id="layoutMode" onchange="changeLayout()">
   <option value="vertical">세로형</option>
   <option value="horizontal">가로형</option>
 </select>
 
- 잡지 이름:
- <input id="titleInput" oninput="updateTitle()" placeholder="EORZEAN">
-  
-  이름:
-  <input id="nameInput" oninput="updateCard()" placeholder="캐릭터 이름">
+<label>잡지 이름</label>
+<input id="titleInput" oninput="updateTitle()" placeholder="EORZEAN">
 
-  전투력:
-  <input id="powerInput" type="range" min="0" max="5" oninput="updateCard()">
+<label>이름</label>
+<input id="nameInput" oninput="updateCard()" placeholder="캐릭터 이름">
 
-  이미지 업로드:
+<label>전투력</label>
+<input id="powerInput" type="range" min="0" max="5" oninput="updateCard()">
+
+<label>이미지 업로드</label>
 <input type="file" id="imgInput" accept="image/*" onchange="loadImage(event)">
-  
- 
-  <h3>직업 선택</h3>
+
+<h3>직업 선택</h3>
 <div id="jobSelect"></div>
 
 <button onclick="selectAllJobs()">전체 선택</button>
 <button onclick="clearJobs()">전체 해제</button>
 
-  태그 (쉼표로 구분):
-  <input id="tagInput" oninput="updateCard()" placeholder="RT, BL, HL">
+<label>태그 (쉼표)</label>
+<input id="tagInput" oninput="updateCard()" placeholder="RT, BL, HL">
 
-  
- 
-  <button onclick="saveImage()">이미지 저장</button>
-  
+<button onclick="saveImage()">이미지 저장</button>
 </div>
 
  <!-- 카드 -->
