@@ -211,7 +211,7 @@
 
 <script>
 
-// ⭐ 1. 직업 데이터 (맨 위)
+// ⭐ 1. 직업 데이터
 const jobCategories = {
   "전투": {
     "탱커": ["pld","war","drk","gnb"],
@@ -228,36 +228,9 @@ const jobCategories = {
   ]
 };
 
-// ⭐ 2. 선택된 직업 저장
-let jobHTML = [];
+// ⭐ 2. 선택된 직업 저장 (🔥 핵심)
+let selectedJobs = [];
 
-Object.values(jobCategories).forEach(category => {
-
-  // ⭐ 전투 (2단 구조)
-  if (typeof category === "object" && !Array.isArray(category)) {
-    Object.values(category).forEach(sub => {
-      sub.forEach(job => {
-        if (selectedJobs.includes(job)) {
-          let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
-          jobHTML.push(`<img src="${path}" style="width:30px; filter: invert(1);">`);
-        }
-      });
-    });
-  }
-
-  // ⭐ 제작 / 채집 (1단 구조)
-  else {
-    category.forEach(job => {
-      if (selectedJobs.includes(job)) {
-        let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
-        jobHTML.push(`<img src="${path}" style="width:30px; filter: invert(1);">`);
-      }
-    });
-  }
-
-});
-
-document.getElementById("job").innerHTML = jobHTML.join("");
 
 // ⭐ 3. 카드 업데이트
 function updateCard() {
@@ -288,23 +261,40 @@ function updateCard() {
 
   document.getElementById("tags").innerHTML = tagHTML;
 
-  // ⭐ 직업 표시 (선택된 것만)
+  // ⭐ 직업 표시
   let jobHTML = [];
 
-// 순서대로 넣기
-Object.values(jobCategories).forEach(category => {
-  category.forEach(job => {
-    if (selectedJobs.includes(job)) {
-      let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
-      jobHTML.push(`<img src="${path}" style="width:30px; filter: invert(1);">`);
-    }
-  });
-});
+  Object.values(jobCategories).forEach(category => {
 
-document.getElementById("job").innerHTML = jobHTML.join("");
+    // 전투 (2단 구조)
+    if (typeof category === "object" && !Array.isArray(category)) {
+      Object.values(category).forEach(sub => {
+        sub.forEach(job => {
+          if (selectedJobs.includes(job)) {
+            let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
+            jobHTML.push(`<img src="${path}" style="width:30px; filter: invert(1);">`);
+          }
+        });
+      });
+    }
+
+    // 제작 / 채집
+    else {
+      category.forEach(job => {
+        if (selectedJobs.includes(job)) {
+          let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
+          jobHTML.push(`<img src="${path}" style="width:30px; filter: invert(1);">`);
+        }
+      });
+    }
+
+  });
+
+  document.getElementById("job").innerHTML = jobHTML.join("");
 }
 
-// ⭐ 4. 클릭하면 선택/해제
+
+// ⭐ 클릭하면 선택/해제
 function toggleJob(job) {
   if (selectedJobs.includes(job)) {
     selectedJobs = selectedJobs.filter(j => j !== job);
@@ -316,8 +306,8 @@ function toggleJob(job) {
   updateSelectionUI();
 }
 
-// ⭐ 5. 선택 UI 생성
-function renderJobSelect() {
+
+// ⭐ 선택 UI 생성
 function renderJobSelect() {
   let html = "";
 
@@ -326,7 +316,7 @@ function renderJobSelect() {
 
     let data = jobCategories[category];
 
-    // ⭐ 전투처럼 객체일 경우
+    // 전투
     if (typeof data === "object" && !Array.isArray(data)) {
       for (let sub in data) {
         html += `<div>${sub}</div>`;
@@ -344,7 +334,7 @@ function renderJobSelect() {
       }
     }
 
-    // ⭐ 제작 / 채집 (배열)
+    // 제작 / 채집
     else {
       data.forEach(job => {
         let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
@@ -362,7 +352,8 @@ function renderJobSelect() {
   document.getElementById("jobSelect").innerHTML = html;
 }
 
-// ⭐ 6. 선택된 아이콘 표시
+
+// ⭐ 선택된 UI 표시
 function updateSelectionUI() {
   document.querySelectorAll(".job-select").forEach(el => {
     let job = el.id.replace("select-", "");
@@ -375,21 +366,35 @@ function updateSelectionUI() {
   });
 }
 
-// ⭐ 7. 전체 선택
+
+// ⭐ 전체 선택
 function selectAllJobs() {
-  selectedJobs = Object.values(jobCategories).flat();
+  selectedJobs = [];
+
+  Object.values(jobCategories).forEach(category => {
+    if (typeof category === "object" && !Array.isArray(category)) {
+      Object.values(category).forEach(sub => {
+        selectedJobs.push(...sub);
+      });
+    } else {
+      selectedJobs.push(...category);
+    }
+  });
+
   updateCard();
   updateSelectionUI();
 }
 
-// ⭐ 8. 전체 해제
+
+// ⭐ 전체 해제
 function clearJobs() {
   selectedJobs = [];
   updateCard();
   updateSelectionUI();
 }
 
-// ⭐ 9. 이미지 업로드
+
+// ⭐ 이미지 업로드
 function loadImage(event) {
   let file = event.target.files[0];
 
@@ -404,10 +409,11 @@ function loadImage(event) {
   }
 }
 
-  // 이미지 저장
+
+// ⭐ 이미지 저장
 function saveImage() {
   html2canvas(document.querySelector(".card"), {
-    scale: 2  // ⭐ 해상도 2배
+    scale: 2
   }).then(canvas => {
     let link = document.createElement("a");
     link.download = "character.png";
@@ -416,27 +422,28 @@ function saveImage() {
   });
 }
 
+
+// ⭐ 제목
 function updateTitle() {
   document.getElementById("mainTitle").innerText =
     document.getElementById("titleInput").value || "TITLE";
 }
 
- function changeLayout() {
+
+// ⭐ 레이아웃 변경
+function changeLayout() {
   let mode = document.getElementById("layoutMode").value;
   let card = document.querySelector(".card");
 
   card.classList.remove("vertical", "horizontal");
   card.classList.add(mode);
 }
-}
 
-  
-// ⭐ 10. 페이지 로드시 실행
+
+// ⭐ 초기 실행
 renderJobSelect();
+document.querySelector(".card").classList.add("vertical");
 
-
-  document.querySelector(".card").classList.add("vertical");
-  
 </script>
 
 </body>
