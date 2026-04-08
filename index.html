@@ -69,13 +69,14 @@
   }
 
   input {
-    width: 100%;
+   width: 80%;
+  max-width: 200px;
     margin-bottom: 10px;
     padding: 5px;
   }
 
   .job-select {
-  width: 35px;
+  width: 28px;
   margin: 3px;
   cursor: pointer;
   filter: invert(1);
@@ -158,6 +159,16 @@
   display: flex;
   justify-content: center;       /* ⭐ 추가 */
 }
+  .save-box {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #444;
+}
+  .panel h3 {
+  margin-top: 20px;
+  font-size: 14px;
+  opacity: 0.7;
+}
 </style>
 </head>
 
@@ -182,18 +193,21 @@
   전투력:
   <input id="powerInput" type="range" min="0" max="5" oninput="updateCard()">
 
-  태그 (쉼표로 구분):
-  <input id="tagInput" oninput="updateCard()" placeholder="RT, BL, HL">
-
   이미지 업로드:
 <input type="file" id="imgInput" accept="image/*" onchange="loadImage(event)">
-
+  
+ 
   <h3>직업 선택</h3>
 <div id="jobSelect"></div>
 
 <button onclick="selectAllJobs()">전체 선택</button>
 <button onclick="clearJobs()">전체 해제</button>
 
+  태그 (쉼표로 구분):
+  <input id="tagInput" oninput="updateCard()" placeholder="RT, BL, HL">
+
+  
+ 
   <button onclick="saveImage()">이미지 저장</button>
   
 </div>
