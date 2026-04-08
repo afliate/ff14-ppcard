@@ -71,6 +71,19 @@
     margin-bottom: 10px;
     padding: 5px;
   }
+
+  /* ⭐⭐⭐ 여기부터 추가 ⭐⭐⭐ */
+  .job-select {
+  width: 35px;
+  margin: 3px;
+  cursor: pointer;
+  filter: invert(1);
+  transition: 0.2s; /* ⭐ 추가 */
+}
+
+  .job-select:hover {
+  transform: scale(1.1);
+}
 </style>
 </head>
 
@@ -92,9 +105,11 @@
   이미지 업로드:
 <input type="file" id="imgInput" accept="image/*" onchange="loadImage(event)">
 
-  직업 (쉼표로 구분):
-  <input id="jobInput" oninput="updateCard()" placeholder="pld, war, drk">
+  <h3>직업 선택</h3>
+<div id="jobSelect"></div>
 
+<button onclick="selectAllJobs()">전체 선택</button>
+<button onclick="clearJobs()">전체 해제</button>
 </div>
 
 <!-- 카드 -->
@@ -110,6 +125,24 @@
 </div>
 
 <script>
+  const jobCategories = {
+  "전투": [
+    "pld","war","drk","gnb",
+    "whm","sch","ast","sge",
+    "mnk","drg","nin","sam","rpr","vpr",
+    "brd","mch","dnc",
+    "blm","smn","rdm","blu","pct"
+  ],
+  "제작": [
+    "crp","bsm","arm","gsm","ltw","wvr","alc","cul"
+  ],
+  "채집": [
+    "min","btn","fsh"
+  ]
+};
+
+    let selectedJobs = [];
+  
 function updateCard() { //  전체 업데이트 담당
 
   // 이름
@@ -149,14 +182,13 @@ function updateCard() { //  전체 업데이트 담당
 
   let jobHTML = "";
 
-  jobs.forEach(job => {
-    if (job !== "") {
-      let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
-      jobHTML += `<img src="${path}" style="width:40px; filter: invert(1);">`;
-    }
-  });
+selectedJobs.forEach(job => {
+  let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
 
-  document.getElementById("job").innerHTML = jobHTML;
+  jobHTML += `<img src="${path}" style="width:40px; filter: invert(1);">`;
+});
+
+document.getElementById("job").innerHTML = jobHTML;
 }
 
 // ⭐⭐ 여기로 빼야 함 (핵심)
@@ -173,6 +205,64 @@ function loadImage(event) {
     reader.readAsDataURL(file);
   }
 }
+
+  function renderJobSelect() {
+  let html = "";
+
+  for (let category in jobCategories) {
+    html += `<h4>${category}</h4>`;
+
+    jobCategories[category].forEach(job => {
+      let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
+
+      html += `
+        <img src="${path}" 
+             onclick="toggleJob('${job}')" 
+             class="job-select"
+             id="select-${job}">
+      `;
+    });
+  }
+
+  document.getElementById("jobSelect").innerHTML = html;
+}
+
+  function toggleJob(job) {
+  if (selectedJobs.includes(job)) {
+    selectedJobs = selectedJobs.filter(j => j !== job);
+  } else {
+    selectedJobs.push(job);
+  }
+
+  updateCard();
+  updateSelectionUI();
+}
+
+  function updateSelectionUI() {
+  document.querySelectorAll(".job-select").forEach(el => {
+    let job = el.id.replace("select-", "");
+
+    if (selectedJobs.includes(job)) {
+      el.style.border = "2px solid white";
+    } else {
+      el.style.border = "none";
+    }
+  });
+}
+
+  function selectAllJobs() {
+  selectedJobs = Object.values(jobCategories).flat();
+  updateCard();
+  updateSelectionUI();
+}
+
+function clearJobs() {
+  selectedJobs = [];
+  updateCard();
+  updateSelectionUI();
+}
+
+  renderJobSelect();
 </script>
 
 </body>
