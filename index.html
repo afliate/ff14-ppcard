@@ -137,14 +137,12 @@
 // <!-- 입력 패널 -->
 <div class="panel">
   <h2>파이널 판타지 14 캐릭터 시트 제작기</h2>
-
-  <h1 id="mainTitle">LALAFELL</h1>
   
   이름:
   <input id="nameInput" oninput="updateCard()" placeholder="캐릭터 이름">
 
   전투력:
-  <input id="powerInput" type="range" min="0" max="10" oninput="updateCard()">
+  <input id="powerInput" type="range" min="0" max="5" oninput="updateCard()">
 
   태그 (쉼표로 구분):
   <input id="tagInput" oninput="updateCard()" placeholder="RT, BL, HL">
@@ -162,10 +160,13 @@
   
 </div>
 
-// <!-- 카드 --> html 추가부분
+// <!-- 카드 -->
+  
 <div class="card">
   <img class="bg" id="bgImage" src="">
-
+  
+ <h1 id="mainTitle">LALAFELL</h1>
+  
 <div class="content">
   <div id="job"></div>
 
@@ -211,7 +212,7 @@ function updateCard() {
   let power = Number(document.getElementById("powerInput").value) || 0;
   let dots = "";
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 5; i++) {
     dots += `<span class="dot ${i < power ? "filled" : ""}"></span>`;
   }
 
