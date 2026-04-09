@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>FF14 캐릭터 시트 제작기 - 매거진 에디션</title>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #1a1a1a;
+  color: white;
+  font-family: 'Pretendard', sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ==========================================
+   왼쪽 설정 패널
+========================================== */
+.panel {
+  width: 300px;
+  min-width: 300px;
+  padding: 20px;
+  background: #111;
+  border-right: 1px solid #222;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.panel h2 { font-size: 16px; margin-bottom: 20px; color: #f5c518; }
+
+.section {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #222;
+}
+
+.section h3 {
+  font-size: 11px;
+  opacity: 0.5;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.field label { font-size: 11px; opacity: 0.6; }
+.field input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  background: #222;
+  border: 1px solid #333;
+  color: white;
+  font-size: 13px;
+}
+
+.job-icon-small {
+  width: 30px; height: 30px; cursor: pointer; filter: grayscale(1); opacity: 0.5;
+}
+.job-icon-small.selected { filter: grayscale(0); opacity: 1; outline: 1px solid white; }
+.job-icon-small.main-selected { filter: grayscale(0); opacity: 1; outline: 2px solid #f5c518; }
+
+.lineart-picker-item {
+  width: 45px; height: 45px; cursor: pointer; border: 1px solid #333; padding: 2px; filter: invert(1);
+}
+.lineart-picker-item.active { border: 2px solid #f5c518; }
+
+/* ==========================================
+   오른쪽 미리보기 (잡지 스타일)
+========================================== */
+.preview-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #252525;
+  padding: 40px;
+}
+
+#previewWrapper { transform-origin: center; }
+
+#card {
+  width: 1080px;
+  height: 1920px;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+}
+
+/* 배경 이미지 */
+#bgImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0; left: 0;
+}
+
+/* 잡지 타이틀 (캐릭터 이름) */
+#nameDisplay {
+  position: absolute;
+  top: 80px;
+  left: 50px;
+  font-size: 220px;
+  font-weight: 900;
+  line-height: 0.8;
+  letter-spacing: -8px;
+  z-index: 10;
+  text-transform: uppercase;
+  font-family: 'Arial Black', sans-serif;
+  color: white;
+  text-shadow: 15px 15px 0px rgba(0,0,0,0.3);
+}
+
+/* 직업 아이콘 세로 배치 */
+#jobDisplay {
+  position: absolute;
+  left: 60px;
+  bottom: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 20;
+}
+
+.job-card-icon {
+  width: 100px; height: 100px;
+  filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+}
+.job-card-icon.main {
+  outline: 6px solid #f5c518;
+  outline-offset: 5px;
+}
+
+/* 서버 정보 */
+#serverDisplay {
+  position: absolute;
+  bottom: 100px;
+  left: 60px;
+  font-size: 50px;
+  font-weight: 300;
+  color: #f5c518;
+  letter-spacing: 15px;
+  z-index: 20;
+  text-transform: uppercase;
+}
+
+/* 라인아트 (화이트 필터 적용) */
+#lineArt {
+  position: absolute;
+  right: -100px;
+  bottom: -50px;
+  width: 1000px;
+  opacity: 0.25;
+  filter: brightness(0) invert(1); /* 검은색을 흰색으로! */
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* 바코드 */
+.barcode-area {
+  position: absolute;
+  top: 50px;
+  right: 50px;
+  text-align: right;
+  z-index: 20;
+  color: white;
+}
+#barcodeText { font-size: 20px; letter-spacing: 5px; margin-top: 5px; }
+
+</style>
+</head>
+<body>
+
+<div class="panel">
+  <h2>매거진 시트 설정</h2>
+
+  <div class="section">
+    <h3>캐릭터 정보</h3>
+    <div class="field">
+      <label>이름 (영문 추천)</label>
+      <input type="text" id="nameInput" oninput="updateCard()" placeholder="CHARACTER NAME">
+    </div>
+    <div class="field">
+      <label>서버</label>
+      <input type="text" id="serverInput" oninput="updateCard()" placeholder="CARBUNCLE">
+    </div>
+    <div class="field">
+      <label>데이터센터 (한섭은 비워두세요)</label>
+      <input type="text" id="dcInput" oninput="updateCard()" placeholder="">
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>이미지 설정</h3>
+    <div class="field">
+      <label>배경 이미지</label>
+      <input type="file" accept="image/*" onchange="loadBgImage(event)">
+    </div>
+    <div class="field">
+      <label>라인아트 선택</label>
+      <div id="lineArtPicker" style="display:flex; flex-wrap:wrap; gap:5px; background:#222; padding:5px;"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>직업 선택</h3>
+    <p style="font-size:10px; opacity:0.5;">첫 번째 클릭: 메인(포인트) / 다시 클릭: 해제</p>
+    <div id="jobSelectArea" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+  </div>
+
+  <div class="section">
+    <button onclick="saveImage()" style="width:100%; padding:15px; background:#f5c518; border:none; font-weight:bold; cursor:pointer;">이미지 저장하기</button>
+  </div>
+</div>
+
+<div class="preview-container">
+  <div id="previewWrapper">
+    <div id="card">
+      <img id="bgImage" src="">
+      <img id="lineArt" src="">
+      
+      <div id="nameDisplay">NAME</div>
+      
+      <div id="jobDisplay"></div>
+      
+      <div id="serverDisplay">SERVER</div>
+
+      <div class="barcode-area">
+        <svg id="barcodeSvg" width="150" height="60"></svg>
+        <div id="barcodeText">FF14-PROFILE</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const clJobs = ["PLD","WAR","DRK","GNB","WHM","SCH","AST","SGE","MNK","DRG","NIN","SAM","RPR","VPR","BRD","MCH","DNC","BLM","SMN","RDM","PCT"];
+const baseUrl = "https://raw.githubusercontent.com/afliate/f_f14_profile/main/images/jobs/";
+
+let selectedJobs = [];
+let currentLineArt = "";
+
+// 1. 초기 UI 생성
+function init() {
+  // 라인아트 피커 생성
+  const picker = document.getElementById("lineArtPicker");
+  picker.innerHTML = clJobs.map(job => `
+    <img src="${baseUrl}CL/${job}.png" class="lineart-picker-item" onclick="selectLineArt('${job}')" id="la-${job}">
+  `).join("");
+
+  // 직업 선택 아이콘 생성
+  const jobArea = document.getElementById("jobSelectArea");
+  jobArea.innerHTML = clJobs.map(job => `
+    <img src="${baseUrl}${job.toLowerCase()}.png" class="job-icon-small" onclick="toggleJob('${job.toLowerCase()}')" id="icon-${job.toLowerCase()}">
+  `).join("");
+
+  drawBarcode();
+  updateCard();
+  fitPreview();
+}
+
+// 2. 직업 선택 로직 (첫 번째 선택이 메인)
+function toggleJob(job) {
+  const index = selectedJobs.indexOf(job);
+  if (index > -1) {
+    selectedJobs.splice(index, 1);
+  } else {
+    selectedJobs.push(job);
+  }
+  updateJobUI();
+  updateCard();
+}
+
+function updateJobUI() {
+  document.querySelectorAll(".job-icon-small").forEach(el => {
+    const job = el.id.replace("icon-", "");
+    el.classList.remove("selected", "main-selected");
+    if (selectedJobs[0] === job) el.classList.add("main-selected");
+    else if (selectedJobs.includes(job)) el.classList.add("selected");
+  });
+}
+
+// 3. 라인아트 선택
+function selectLineArt(job) {
+  currentLineArt = `${baseUrl}CL/${job}.png`;
+  const laImg = document.getElementById("lineArt");
+  laImg.src = currentLineArt;
+  laImg.style.display = "block";
+  
+  document.querySelectorAll(".lineart-picker-item").forEach(el => el.classList.remove("active"));
+  document.getElementById(`la-${job}`).classList.add("active");
+}
+
+// 4. 카드 업데이트
+function updateCard() {
+  const name = document.getElementById("nameInput").value || "CHARACTER";
+  const server = document.getElementById("serverInput").value || "SERVER";
+  const dc = document.getElementById("dcInput").value;
+
+  document.getElementById("nameDisplay").innerText = name;
+  document.getElementById("serverDisplay").innerText = dc ? `${server} · ${dc}` : server;
+
+  // 카드 내 직업 아이콘 렌더링
+  const display = document.getElementById("jobDisplay");
+  display.innerHTML = selectedJobs.map((job, idx) => `
+    <img src="${baseUrl}${job}.png" class="job-card-icon ${idx === 0 ? 'main' : ''}">
+  `).join("");
+}
+
+// 5. 배경 이미지 로드 및 드래그
+function loadBgImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById("bgImage").src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// 6. 기타 기능 (바코드, 저장, 스케일)
+function drawBarcode() {
+  const svg = document.getElementById("barcodeSvg");
+  let rects = "";
+  for(let i=0; i<30; i++) {
+    const w = Math.random() > 0.5 ? 4 : 2;
+    rects += `<rect x="${i*5}" y="0" width="${w}" height="60" fill="white" />`;
+  }
+  svg.innerHTML = rects;
+}
+
+function fitPreview() {
+  const wrapper = document.getElementById("previewWrapper");
+  const container = document.querySelector(".preview-container");
+  const scale = Math.min((container.clientWidth - 50) / 1080, (container.clientHeight - 50) / 1920);
+  wrapper.style.transform = `scale(${scale})`;
+}
+
+function saveImage() {
+  const card = document.getElementById("card");
+  html2canvas(card, { scale: 2 }).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "ff14_magazine_sheet.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+}
+
+window.onload = init;
+window.onresize = fitPreview;
+</script>
+</body>
+</html>
