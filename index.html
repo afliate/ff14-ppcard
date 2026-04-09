@@ -242,16 +242,20 @@ input[type="file"] {
   letter-spacing: 0.05em;
 }
 
-/* ── 하단 정보 블록 ── */
+/* 하단 블록을 그라데이션으로 교체 */
 .bottom-block {
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
+  /* ... 나머지 속성 ... */
+}
+
+/* 직업 아이콘 세로 나열 */
+#jobDisplay {
+  display: flex;
+  flex-direction: column; /* 세로로! */
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(8px);
-  z-index: 10;
-  padding: 36px 60px 40px;
+  left: 40px;
+  bottom: 150px;
+  gap: 10px;
 }
 
 /* 칭호 + 이름 + 서버 */
