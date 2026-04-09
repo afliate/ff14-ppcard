@@ -208,7 +208,7 @@ input[type="file"] {
 .card {
   position: relative;
   overflow: hidden;
-  background: #000;
+  background: #1a0a2e;
 }
 
 /* 세로형 기본 */
@@ -283,12 +283,13 @@ input[type="file"] {
 /* 잡 아이콘 — 중앙 원 안에 */
 .job-meteor .job-fg {
   position: absolute;
-  width: 40%;
-  height: 40%;
-  top: 53%;        /* 46% → 53% */
-  left: 50%;
+  width: 45%;
+  height: 45%;
+  top: 55%;
+  left: 48%;
   transform: translate(-50%, -50%);
   filter: invert(1);
+}
 }
 
 /* 정보 박스 */
@@ -393,6 +394,11 @@ input[type="file"] {
       <input type="text" id="titleInput" oninput="updateTitle()" placeholder="EORZEAN">
     </div>
 
+     <div class="field">
+  <label>칭호</label>
+  <input type="text" id="titleBoxInput" oninput="updateFeatureBox()" placeholder="모험가">
+</div>
+     
     <div class="field">
       <label>캐릭터 이름</label>
       <input type="text" id="nameInput" oninput="updateCard()" placeholder="이름">
@@ -455,7 +461,7 @@ input[type="file"] {
         <div id="jobDisplay"></div>
 
         <div class="info">
-          <div class="feature-box">모험가</div>
+          <div class="feature-box" id="featureBox">모험가</div>
           <div id="name">캐릭터</div>
           <div id="stats"></div>
           <div id="tags"></div>
@@ -679,6 +685,10 @@ function saveImage() {
   });
 }
 
+   function updateFeatureBox() {
+  document.getElementById("featureBox").innerText =
+    document.getElementById("titleBoxInput").value || "모험가";
+}
 
 // ==========================================
 //  초기 실행
@@ -689,5 +699,6 @@ fitPreview();
 window.addEventListener("resize", fitPreview);
 </script>
 
+   
 </body>
 </html>
