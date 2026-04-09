@@ -7,450 +7,237 @@
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <style>
-  body {
-    margin: 0;
-    background: #1a1a1a;
-    color: white;
-    font-family: sans-serif;
-    display: flex;
-  }
+body {
+  margin: 0;
+  background: #1a1a1a;
+  color: white;
+  font-family: sans-serif;
+  display: flex;
+}
 
-  .panel {
-  width: 260px;   /* ⭐ % → 고정폭이 훨씬 안정적 */
+.panel {
+  width: 260px;
   padding: 15px;
   background: #111;
-}
-
-  .card {
-    position: relative;
-    width: 70%;
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  .bg {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(0.5);
-  }
-
-  .content {
-    position: absolute;
-    bottom: 50px;
-    left: 50px;
-  }
-
-  h1 {
-    font-size: 60px;
-    margin: 0;
-  }
-
-  .dot {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border: 1px solid white;
-    border-radius: 50%;
-    margin-right: 5px;
-  }
-
-  .filled {
-    background: white;
-  }
-
-  .tag {
-    display: inline-block;
-    border: 1px solid white;
-    padding: 5px 10px;
-    margin-right: 5px;
-    margin-top: 5px;
-  }
-
-  input {
-   width: 80%;
-  max-width: 200px;
-    margin-bottom: 10px;
-    padding: 5px;
-  }
-
- .job-select {
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-  filter: invert(1);
-  transition: 0.15s;
-  box-sizing: border-box;
-}
-
-/* ⭐ hover는 transform 대신 "outline" */
-.job-select:hover {
-  outline: 1px solid white;
-  outline-offset: 2px;
-}
-
-/* 선택 상태 */
-.job-selected {
-  outline: 2px solid white;
-  outline-offset: 2px;
-}
-
-  #job {
-  z-index: 10;
-  position: absolute;
-  left: 20px;
-  bottom: 50px;
-
-  display: flex;
-  flex-direction: column; /* ⭐ 세로 */
-  gap: 5px;
-}
-#mainTitle {
-  position: absolute;
-  top: 20px;
-  left: 50px;
-  font-size: 6vw;
-  font-weight: bold;
-}
-.content {
-  display: flex;
-  gap: 20px;
-}
-
-.info {
-  margin-left: 20px;
-}
-.info {
-  background: rgba(0, 0, 0, 0.5);
-  padding: 15px;
-  border-radius: 10px;
-  backdrop-filter: blur(5px); /* ⭐ 유리 느낌 */
-}
-
-  .content {
-  position: absolute;
-  bottom: 50px;
-  left: 100px; /* 아이콘 자리 고려해서 밀기 */
-}
-
-  .feature-box {
-  background: rgba(255, 0, 0, 0.7);
-  padding: 5px 10px;
-}
-  /* 세로형 */
-.card.vertical {
-  width: 1080px;
-  height: 1920px;
-}
-
-/* 가로형 */
-.card.horizontal {
-  width: 1920px;
-  height: 1080px;
-}
-  .bg {
-  object-fit: cover;
-}
-.horizontal .bg {
-  object-position: center top;
-}
-
-  .preview-container {
-  width: 80%;              /* 오른쪽 영역 */
-  display: flex;
-  justify-content: center;
-}
-
-  .preview-wrapper {
-  transform: scale(0.7);
-  transform-origin: top center;  /* ⭐ 변경 */
-  display: flex;
-  justify-content: center;       /* ⭐ 추가 */
-}
-  .save-box {
-  margin-top: 20px;
-  padding-top: 10px;
-  border-top: 1px solid #444;
-}
-/* ⭐ 패널 섹션 정리 */
-.panel h2 {
-  margin-bottom: 10px;
-}
-
-.panel h3 {
-  margin-top: 18px;
-  margin-bottom: 6px;
-  font-size: 14px;
-  opacity: 0.7;
-}
-
-/* ⭐ 라벨 + 입력 묶음 */
-.panel label {
-  font-size: 12px;
-  opacity: 0.8;
-  margin-top: 6px;
-}
-
-/* ⭐ input 간격 + 숨통 */
-.panel input,
-.panel select {
-  width: 100%;
-  max-width: 220px;
-  padding: 6px 8px;
-  margin-bottom: 6px;
-  box-sizing: border-box;
-}
-
-/* ⭐ 버튼 간격 */
-.panel button {
-  margin-top: 6px;
-  padding: 6px;
-  cursor: pointer;
-}
-
-/* ⭐ 직업 선택 영역 숨통 */
-#jobSelect {
-  margin-top: 6px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-}
-
-/* ⭐ 구분선 느낌 */
-.panel {
   border-right: 1px solid #222;
 }
 
-  .layout-buttons {
+.card {
+  position: relative;
+  width: 70%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* 배경 */
+.bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.55);
+}
+
+/* ===== 잡지 오버레이 ===== */
+.overlay {
+  position: absolute;
+  inset: 0;
+  padding: 40px;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr auto;
+  gap: 18px;
+}
+
+/* 헤더 */
+.mag-header {
   display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-
-.layout-btn {
-  flex: 1;
-  padding: 6px;
-  background: #222;
-  color: white;
-  border: 1px solid #444;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.layout-btn.active {
-  background: white;
-  color: black;
-}
-  .section {
-  margin-bottom: 14px;
+  justify-content: space-between;
+  font-size: 14px;
+  opacity: 0.8;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
   padding-bottom: 10px;
-  border-bottom: 1px solid #222;
 }
 
-.section h3 {
+/* 타이틀 */
+.mag-title {
+  font-size: 48px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.new-badge {
+  background: crimson;
+  padding: 2px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
+/* 프로필 */
+.profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#name {
+  font-size: 32px;
+  margin: 0;
+}
+
+#stats {
   font-size: 12px;
-  opacity: 0.6;
+  opacity: 0.8;
+}
+
+/* 본문 2컬럼 */
+.body-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.block {
+  background: rgba(0,0,0,0.35);
+  padding: 12px;
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+}
+
+.block h3 {
+  font-size: 12px;
+  opacity: 0.7;
   margin-bottom: 8px;
 }
 
-.actions {
+/* 태그 */
+.tag {
+  display: inline-block;
+  border: 1px solid white;
+  padding: 4px 8px;
+  margin: 3px;
+  font-size: 11px;
+}
+
+/* 직업 아이콘 */
+#job {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
-.actions button {
-  padding: 6px;
-  background: #222;
-  border: 1px solid #444;
-  color: white;
-  cursor: pointer;
-}
- #jobSelect {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* 카테고리 한 줄 */
-.job-category {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-/* 제목 고정 폭 */
-.job-title {
-  width: 40px;
-  font-size: 11px;
-  opacity: 0.7;
-}
-
-/* 아이콘 줄 */
-.job-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-  .field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-
-.field label {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.field input {
-  width: 100%;
-  max-width: 220px;
-  padding: 6px 8px;
-  box-sizing: border-box;
-}
-  .job-category {
-  margin-bottom: 12px;
-}
-
-.job-title {
-  font-size: 12px;
-  opacity: 0.7;
-  margin-bottom: 6px;
-}
-
-/* ⭐ 한 줄 (탱커/힐러 같은 sub row) */
-.job-subrow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-/* ⭐ 라벨 */
-.job-subtitle {
-  width: 40px;
-  font-size: 11px;
-  opacity: 0.6;
-}
-
-/* ⭐ 아이콘 줄 */
-.job-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-/* ⭐ 아이콘 고정 (절대 안 흔들리게) */
-.job-select {
+#job img {
   width: 28px;
-  height: 28px;
-  cursor: pointer;
   filter: invert(1);
+}
+
+/* 푸터 */
+.footer {
+  font-size: 10px;
+  opacity: 0.6;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  padding-top: 8px;
+}
+
+/* 전투력 도트 */
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border: 1px solid white;
+  border-radius: 50%;
+  margin-right: 3px;
+}
+
+.filled { background: white; }
+
+/* 레이아웃 */
+.card.vertical { width: 1080px; height: 1920px; }
+.card.horizontal { width: 1920px; height: 1080px; }
+
+/* 패널 */
+input {
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 8px;
   box-sizing: border-box;
 }
 
-/* hover는 레이아웃 안 건드림 */
-.job-select:hover {
-  outline: 1px solid white;
-  outline-offset: 2px;
-}
+button { cursor: pointer; }
 
-.job-selected {
-  outline: 2px solid white;
-  outline-offset: 2px;
-}
 </style>
 </head>
 
 <body>
 
- <!-- 입력 패널 -->
+<!-- PANEL -->
 <div class="panel">
-  <h2>파이널 판타지 14 캐릭터 시트 제작기</h2>
+  <h2>캐릭터 시트 제작기</h2>
 
-  <!-- ⭐ 레이아웃 -->
-  <div class="section">
-    <label>레이아웃</label>
-    <div class="layout-buttons">
-      <button class="layout-btn active" onclick="setLayout('vertical')">세로형</button>
-      <button class="layout-btn" onclick="setLayout('horizontal')">가로형</button>
+  <input id="titleInput" oninput="updateTitle()" placeholder="잡지 이름">
+  <input id="nameInput" oninput="updateCard()" placeholder="이름">
+  <input id="powerInput" type="range" min="0" max="5" oninput="updateCard()">
+  <input id="tagInput" oninput="updateCard()" placeholder="태그">
+
+  <input type="file" onchange="loadImage(event)">
+
+  <button onclick="selectAllJobs()">전체 선택</button>
+  <button onclick="clearJobs()">전체 해제</button>
+  <button onclick="saveImage()">저장</button>
+</div>
+
+<!-- CARD -->
+<div class="card vertical">
+  <img class="bg" id="bgImage">
+
+  <div class="overlay">
+
+    <!-- HEADER -->
+    <div class="mag-header">
+      <div>Daily Eorzea</div>
+      <div>No.1 / SPECIAL</div>
     </div>
-  </div>
 
-  <!-- ⭐ 기본 정보 -->
- <div class="section">
-  <h3>기본 정보</h3>
+    <!-- TITLE -->
+    <div>
+      <span class="mag-title" id="mainTitle">EORZEAN</span>
+      <span class="new-badge">NEW</span>
+    </div>
 
-  <div class="field">
-    <label>잡지 이름</label>
-    <input id="titleInput" oninput="updateTitle()" placeholder="EORZEAN">
-  </div>
+    <!-- PROFILE -->
+    <div class="profile">
+      <div>
+        <h2 id="name">캐릭터</h2>
+        <div id="stats"></div>
+      </div>
+    </div>
 
-  <div class="field">
-    <label>이름</label>
-    <input id="nameInput" oninput="updateCard()" placeholder="캐릭터 이름">
-  </div>
+    <!-- BODY -->
+    <div class="body-grid">
 
-  <div class="field">
-    <label>전투력</label>
-    <input id="powerInput" type="range" min="0" max="5" oninput="updateCard()">
-  </div>
-</div>
-  <!-- ⭐ 이미지 -->
-  <div class="section">
-    <h3>이미지</h3>
-    <input type="file" id="imgInput" accept="image/*" onchange="loadImage(event)">
-  </div>
+      <div class="block">
+        <h3>MAIN JOB</h3>
+        <div id="job"></div>
+      </div>
 
-  <!-- ⭐ 직업 -->
-  <div class="section">
-    <h3>직업 선택</h3>
-    <div id="jobSelect"></div>
-  </div>
+      <div class="block">
+        <h3>PLAY STYLE</h3>
+        <div id="tags"></div>
+      </div>
 
-  <!-- ⭐ 태그 -->
-  <div class="section">
-    <h3>태그</h3>
-    <input id="tagInput" oninput="updateCard()" placeholder="RT, BL, HL">
-  </div>
+    </div>
 
-  <!-- ⭐ 액션 -->
-  <div class="section actions">
-    <button onclick="selectAllJobs()">전체 선택</button>
-    <button onclick="clearJobs()">전체 해제</button>
-    <button onclick="saveImage()">이미지 저장</button>
-  </div>
+    <!-- FOOTER -->
+    <div class="footer">
+      FINAL FANTASY XIV © SQUARE ENIX / Fan-made Sheet
+    </div>
 
-</div>
-
- <!-- 카드 -->
-  
-<div class="preview-container">
-  <div class="preview-wrapper">
-    <div class="card">
-  <img class="bg" id="bgImage" src="">
-  
- <h1 id="mainTitle">EORZEAN</h1>
-  
-<div class="content">
-  <div id="job"></div>
-
-<div class="info">
-  <div class="feature-box">모험가</div>
-
-  <h1 id="name">캐릭터</h1>
-  <div id="stats"></div>
-  <div id="tags"></div>
   </div>
 </div>
 
 <script>
 
-// ⭐ 1. 직업 데이터
 const jobCategories = {
   "전투": {
     "탱커": ["pld","war","drk","gnb"],
@@ -459,249 +246,92 @@ const jobCategories = {
     "원딜": ["brd","mch","dnc"],
     "마딜": ["blm","smn","rdm","pct","blu"]
   },
-  "제작": [
-    "crp","bsm","arm","gsm","ltw","wvr","alc","cul"
-  ],
-  "채집": [
-    "min","btn","fsh"
-  ]
+  "제작": ["crp","bsm","arm","gsm","ltw","wvr","alc","cul"],
+  "채집": ["min","btn","fsh"]
 };
 
-// ⭐ 2. 선택된 직업 저장 (🔥 핵심)
 let selectedJobs = [];
 
-
-// ⭐ 3. 카드 업데이트
 function updateCard() {
 
-  // 이름
   document.getElementById("name").innerText =
     document.getElementById("nameInput").value || "캐릭터";
 
-  // 전투력
-  let power = Number(document.getElementById("powerInput").value) || 0;
+  let power = Number(document.getElementById("powerInput").value);
   let dots = "";
 
-  for (let i = 0; i < 5; i++) {
-    dots += `<span class="dot ${i < power ? "filled" : ""}"></span>`;
+  for (let i=0;i<5;i++) {
+    dots += `<span class='dot ${i<power?'filled':''}'></span>`;
   }
 
-  document.getElementById("stats").innerHTML = "전투: " + dots;
+  document.getElementById("stats").innerHTML = dots;
 
-  // 태그
   let tags = document.getElementById("tagInput").value.split(",");
-  let tagHTML = "";
+  document.getElementById("tags").innerHTML = tags.map(t => t.trim() ? `<span class='tag'>${t}</span>` : "").join("");
 
-  tags.forEach(tag => {
-    if (tag.trim() !== "") {
-      tagHTML += `<span class="tag">${tag.trim()}</span>`;
-    }
-  });
+  let html = "";
 
-  document.getElementById("tags").innerHTML = tagHTML;
-
-  // ⭐ 직업 표시
-  let jobHTML = [];
-
-  Object.values(jobCategories).forEach(category => {
-
-    // 전투 (2단 구조)
-    if (typeof category === "object" && !Array.isArray(category)) {
-      Object.values(category).forEach(sub => {
-        sub.forEach(job => {
-          if (selectedJobs.includes(job)) {
-            let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
-            jobHTML.push(`<img src="${path}" style="width:30px; filter: invert(1);">`);
+  Object.values(jobCategories).forEach(cat => {
+    if (!Array.isArray(cat)) {
+      Object.values(cat).forEach(sub => {
+        sub.forEach(j => {
+          if (selectedJobs.includes(j)) {
+            html += `<img src='images/jobs/ffxivjobssvg/${j}.svg'>`;
           }
         });
       });
-    }
-
-    // 제작 / 채집
-    else {
-      category.forEach(job => {
-        if (selectedJobs.includes(job)) {
-          let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
-          jobHTML.push(`<img src="${path}" style="width:30px; filter: invert(1);">`);
+    } else {
+      cat.forEach(j => {
+        if (selectedJobs.includes(j)) {
+          html += `<img src='images/jobs/ffxivjobssvg/${j}.svg'>`;
         }
       });
     }
-
   });
 
-  document.getElementById("job").innerHTML = jobHTML.join("");
+  document.getElementById("job").innerHTML = html;
 }
 
-
-// ⭐ 클릭하면 선택/해제
-function toggleJob(job) {
-  if (selectedJobs.includes(job)) {
-    selectedJobs = selectedJobs.filter(j => j !== job);
+function toggleJob(job){
+  if(selectedJobs.includes(job)){
+    selectedJobs = selectedJobs.filter(j=>j!==job);
   } else {
     selectedJobs.push(job);
   }
-
   updateCard();
-  updateSelectionUI();
 }
 
-
-// ⭐ 선택 UI 생성
-function renderJobSelect() {
-  let html = "";
-
-  for (let category in jobCategories) {
-
-    html += `<div class="job-category">`;
-    html += `<div class="job-title">${category}</div>`;
-
-    let data = jobCategories[category];
-
-    // ⭐ 전투 (2단 구조)
-    if (typeof data === "object" && !Array.isArray(data)) {
-
-      for (let sub in data) {
-
-        html += `<div class="job-subrow">`;
-        html += `<div class="job-subtitle">${sub}</div>`;
-        html += `<div class="job-row">`;
-
-        data[sub].forEach(job => {
-          let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
-
-          html += `
-            <img src="${path}"
-                 onclick="toggleJob('${job}')"
-                 class="job-select"
-                 id="select-${job}">
-          `;
-        });
-
-        html += `</div>`;
-        html += `</div>`;
-      }
-
-    } 
-    // ⭐ 제작 / 채집
-    else {
-
-      html += `<div class="job-row">`;
-
-      data.forEach(job => {
-        let path = "images/jobs/ffxivjobssvg/" + job + ".svg";
-
-        html += `
-          <img src="${path}"
-               onclick="toggleJob('${job}')"
-               class="job-select"
-               id="select-${job}">
-        `;
-      });
-
-      html += `</div>`;
-    }
-
-    html += `</div>`;
-  }
-
-  document.getElementById("jobSelect").innerHTML = html;
-}
-
-// ⭐ 선택된 UI 표시
-function updateSelectionUI() {
-  document.querySelectorAll(".job-select").forEach(el => {
-    let job = el.id.replace("select-", "");
-
-    if (selectedJobs.includes(job)) {
-      el.classList.add("job-selected");
-    } else {
-      el.classList.remove("job-selected");
-    }
+function selectAllJobs(){
+  selectedJobs=[];
+  Object.values(jobCategories).forEach(cat=>{
+    if(!Array.isArray(cat)){
+      Object.values(cat).forEach(sub=>selectedJobs.push(...sub));
+    } else selectedJobs.push(...cat);
   });
-}
-
-
-// ⭐ 전체 선택
-function selectAllJobs() {
-  selectedJobs = [];
-
-  Object.values(jobCategories).forEach(category => {
-    if (typeof category === "object" && !Array.isArray(category)) {
-      Object.values(category).forEach(sub => {
-        selectedJobs.push(...sub);
-      });
-    } else {
-      selectedJobs.push(...category);
-    }
-  });
-
   updateCard();
-  updateSelectionUI();
 }
 
+function clearJobs(){ selectedJobs=[]; updateCard(); }
 
-// ⭐ 전체 해제
-function clearJobs() {
-  selectedJobs = [];
-  updateCard();
-  updateSelectionUI();
+function loadImage(e){
+  let r=new FileReader();
+  r.onload=e=>document.getElementById("bgImage").src=e.target.result;
+  r.readAsDataURL(e.target.files[0]);
 }
 
-
-// ⭐ 이미지 업로드
-function loadImage(event) {
-  let file = event.target.files[0];
-
-  if (file) {
-    let reader = new FileReader();
-
-    reader.onload = function(e) {
-      document.getElementById("bgImage").src = e.target.result;
-    };
-
-    reader.readAsDataURL(file);
-  }
-}
-
-
-// ⭐ 이미지 저장
-function saveImage() {
-  html2canvas(document.querySelector(".card"), {
-    scale: 2
-  }).then(canvas => {
-    let link = document.createElement("a");
-    link.download = "character.png";
-    link.href = canvas.toDataURL();
-    link.click();
+function saveImage(){
+  html2canvas(document.querySelector(".card"),{scale:2}).then(c=>{
+    let a=document.createElement("a");
+    a.download="character.png";
+    a.href=c.toDataURL();
+    a.click();
   });
 }
 
-
-// ⭐ 제목
-function updateTitle() {
-  document.getElementById("mainTitle").innerText =
-    document.getElementById("titleInput").value || "TITLE";
+function updateTitle(){
+  document.getElementById("mainTitle").innerText=
+    document.getElementById("titleInput").value||"EORZEAN";
 }
-
-
-// ⭐ 레이아웃 변경
-function setLayout(mode) {
-  let card = document.querySelector(".card");
-
-  card.classList.remove("vertical", "horizontal");
-  card.classList.add(mode);
-
-  document.querySelectorAll(".layout-btn").forEach(btn => {
-    btn.classList.remove("active");
-  });
-
-  event.target.classList.add("active");
-}
-
-
-// ⭐ 초기 실행
-renderJobSelect();
-document.querySelector(".card").classList.add("vertical");
 
 </script>
 
