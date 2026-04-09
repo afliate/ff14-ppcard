@@ -1,338 +1,195 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>캐릭터 시트 제작기</title>
 
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <style>
-body {
-  margin: 0;
-  background: #1a1a1a;
-  color: white;
-  font-family: sans-serif;
-  display: flex;
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#111;
+  color:#fff;
+  display:flex;
+  height:100vh;
 }
 
-.panel {
-  width: 260px;
-  padding: 15px;
-  background: #111;
-  border-right: 1px solid #222;
+/* LEFT PANEL */
+.panel{
+  width:320px;
+  padding:16px;
+  background:#1c1c1c;
+  overflow:auto;
+}
+.panel h2{margin-top:0;}
+.panel label{display:block; margin-top:12px; font-size:14px;}
+.panel input, .panel select, .panel textarea{
+  width:100%; padding:6px; margin-top:4px;
 }
 
-.card {
-  position: relative;
-  width: 70%;
-  height: 100vh;
-  overflow: hidden;
+button{
+  margin-top:12px;
+  width:100%; padding:10px;
+  cursor:pointer;
 }
 
-/* 배경 */
-.bg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(0.55);
+/* RIGHT PREVIEW */
+.preview{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#222;
 }
 
-/* ===== 잡지 오버레이 ===== */
-.overlay {
-  position: absolute;
-  inset: 0;
-  padding: 40px;
-  display: grid;
-  grid-template-rows: auto auto auto 1fr auto;
-  gap: 18px;
+.card{
+  width:600px;
+  height:800px;
+  position:relative;
+  background:url('https://images.unsplash.com/photo-1520975922284-9d3b0d7d2b5c') center/cover;
+  overflow:hidden;
+  box-shadow:0 10px 40px rgba(0,0,0,0.5);
 }
 
-/* 헤더 */
-.mag-header {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  opacity: 0.8;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-  padding-bottom: 10px;
+.overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
-/* 타이틀 */
-.mag-title {
-  font-size: 48px;
-  font-weight: bold;
-  letter-spacing: 2px;
+.header{
+  font-size:14px;
+  opacity:0.8;
 }
 
-.new-badge {
-  background: crimson;
-  padding: 2px 8px;
-  font-size: 11px;
-  border-radius: 4px;
-  margin-left: 10px;
+.title{
+  font-size:28px;
+  font-weight:bold;
 }
 
-/* 프로필 */
-.profile {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.section{
+  margin-top:10px;
+  padding:10px;
+  border:1px solid rgba(255,255,255,0.2);
 }
 
-#name {
-  font-size: 32px;
-  margin: 0;
+.jobs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
 }
 
-#stats {
-  font-size: 12px;
-  opacity: 0.8;
+.job{
+  padding:4px 8px;
+  border:1px solid #fff;
+  font-size:12px;
 }
 
-/* 본문 2컬럼 */
-.body-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+.bottom{
+  margin-top:auto;
+  font-size:12px;
+  opacity:0.7;
 }
-
-.block {
-  background: rgba(0,0,0,0.35);
-  padding: 12px;
-  border-radius: 10px;
-  backdrop-filter: blur(6px);
-}
-
-.block h3 {
-  font-size: 12px;
-  opacity: 0.7;
-  margin-bottom: 8px;
-}
-
-/* 태그 */
-.tag {
-  display: inline-block;
-  border: 1px solid white;
-  padding: 4px 8px;
-  margin: 3px;
-  font-size: 11px;
-}
-
-/* 직업 아이콘 */
-#job {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-#job img {
-  width: 28px;
-  filter: invert(1);
-}
-
-/* 푸터 */
-.footer {
-  font-size: 10px;
-  opacity: 0.6;
-  text-align: center;
-  border-top: 1px solid rgba(255,255,255,0.2);
-  padding-top: 8px;
-}
-
-/* 전투력 도트 */
-.dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border: 1px solid white;
-  border-radius: 50%;
-  margin-right: 3px;
-}
-
-.filled { background: white; }
-
-/* 레이아웃 */
-.card.vertical { width: 1080px; height: 1920px; }
-.card.horizontal { width: 1920px; height: 1080px; }
-
-/* 패널 */
-input {
-  width: 100%;
-  padding: 6px;
-  margin-bottom: 8px;
-  box-sizing: border-box;
-}
-
-button { cursor: pointer; }
-
 </style>
 </head>
-
 <body>
 
-<!-- PANEL -->
 <div class="panel">
-  <h2>캐릭터 시트 제작기</h2>
+  <h2>입력 패널</h2>
 
-  <input id="titleInput" oninput="updateTitle()" placeholder="잡지 이름">
-  <input id="nameInput" oninput="updateCard()" placeholder="이름">
-  <input id="powerInput" type="range" min="0" max="5" oninput="updateCard()">
-  <input id="tagInput" oninput="updateCard()" placeholder="태그">
+  <label>잡지 이름</label>
+  <input id="magazine" />
 
-  <input type="file" onchange="loadImage(event)">
+  <label>캐릭터 이름</label>
+  <input id="name" />
 
-  <button onclick="selectAllJobs()">전체 선택</button>
-  <button onclick="clearJobs()">전체 해제</button>
-  <button onclick="saveImage()">저장</button>
+  <label>전투력</label>
+  <input id="power" type="number" />
+
+  <label>잡 선택 (다중 가능)</label>
+  <select id="job" multiple>
+    <option>전사</option>
+    <option>마법사</option>
+    <option>힐러</option>
+    <option>탱커</option>
+  </select>
+
+  <label>태그 (쉼표)</label>
+  <input id="tags" />
+
+  <label>이미지 업로드</label>
+  <input type="file" id="img" />
+
+  <button onclick="renderCard()">적용</button>
+  <button onclick="saveCard()">이미지 저장</button>
 </div>
 
-<!-- CARD -->
-<div class="card vertical">
-  <img class="bg" id="bgImage">
+<div class="preview">
+  <div class="card" id="card">
+    <div class="overlay">
+      <div class="header" id="magazineOut">DAILY EORZEA</div>
+      <div class="title" id="nameOut">CHARACTER NAME</div>
 
-  <div class="overlay">
-
-    <!-- HEADER -->
-    <div class="mag-header">
-      <div>Daily Eorzea</div>
-      <div>No.1 / SPECIAL</div>
-    </div>
-
-    <!-- TITLE -->
-    <div>
-      <span class="mag-title" id="mainTitle">EORZEAN</span>
-      <span class="new-badge">NEW</span>
-    </div>
-
-    <!-- PROFILE -->
-    <div class="profile">
-      <div>
-        <h2 id="name">캐릭터</h2>
-        <div id="stats"></div>
-      </div>
-    </div>
-
-    <!-- BODY -->
-    <div class="body-grid">
-
-      <div class="block">
-        <h3>MAIN JOB</h3>
-        <div id="job"></div>
+      <div class="section">
+        <strong>JOBS</strong>
+        <div class="jobs" id="jobOut"></div>
       </div>
 
-      <div class="block">
-        <h3>PLAY STYLE</h3>
-        <div id="tags"></div>
+      <div class="section">
+        <strong>POWER</strong>
+        <div id="powerOut"></div>
       </div>
 
-    </div>
+      <div class="section">
+        <strong>TAGS</strong>
+        <div id="tagsOut"></div>
+      </div>
 
-    <!-- FOOTER -->
-    <div class="footer">
-      FINAL FANTASY XIV © SQUARE ENIX / Fan-made Sheet
+      <div class="bottom">FFXIV CHARACTER SHEET</div>
     </div>
-
   </div>
 </div>
 
 <script>
+let imgUrl = "";
 
-const jobCategories = {
-  "전투": {
-    "탱커": ["pld","war","drk","gnb"],
-    "힐러": ["whm","sch","ast","sge"],
-    "근딜": ["mnk","drg","nin","sam","rpr","vpr"],
-    "원딜": ["brd","mch","dnc"],
-    "마딜": ["blm","smn","rdm","pct","blu"]
-  },
-  "제작": ["crp","bsm","arm","gsm","ltw","wvr","alc","cul"],
-  "채집": ["min","btn","fsh"]
-};
+document.getElementById('img').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    imgUrl = evt.target.result;
+    document.getElementById('card').style.backgroundImage = `url(${imgUrl})`;
+  };
+  reader.readAsDataURL(file);
+});
 
-let selectedJobs = [];
+function renderCard(){
+  document.getElementById('magazineOut').innerText = document.getElementById('magazine').value || 'DAILY EORZEA';
+  document.getElementById('nameOut').innerText = document.getElementById('name').value || 'CHARACTER NAME';
+  document.getElementById('powerOut').innerText = document.getElementById('power').value || '0';
 
-function updateCard() {
+  const tags = document.getElementById('tags').value.split(',');
+  document.getElementById('tagsOut').innerHTML = tags.map(t => `<span class='job'>${t.trim()}</span>`).join('');
 
-  document.getElementById("name").innerText =
-    document.getElementById("nameInput").value || "캐릭터";
-
-  let power = Number(document.getElementById("powerInput").value);
-  let dots = "";
-
-  for (let i=0;i<5;i++) {
-    dots += `<span class='dot ${i<power?'filled':''}'></span>`;
-  }
-
-  document.getElementById("stats").innerHTML = dots;
-
-  let tags = document.getElementById("tagInput").value.split(",");
-  document.getElementById("tags").innerHTML = tags.map(t => t.trim() ? `<span class='tag'>${t}</span>` : "").join("");
-
-  let html = "";
-
-  Object.values(jobCategories).forEach(cat => {
-    if (!Array.isArray(cat)) {
-      Object.values(cat).forEach(sub => {
-        sub.forEach(j => {
-          if (selectedJobs.includes(j)) {
-            html += `<img src='images/jobs/ffxivjobssvg/${j}.svg'>`;
-          }
-        });
-      });
-    } else {
-      cat.forEach(j => {
-        if (selectedJobs.includes(j)) {
-          html += `<img src='images/jobs/ffxivjobssvg/${j}.svg'>`;
-        }
-      });
-    }
-  });
-
-  document.getElementById("job").innerHTML = html;
+  const jobs = Array.from(document.getElementById('job').selectedOptions).map(o => o.value);
+  document.getElementById('jobOut').innerHTML = jobs.map(j => `<span class='job'>${j}</span>`).join('');
 }
 
-function toggleJob(job){
-  if(selectedJobs.includes(job)){
-    selectedJobs = selectedJobs.filter(j=>j!==job);
-  } else {
-    selectedJobs.push(job);
-  }
-  updateCard();
-}
-
-function selectAllJobs(){
-  selectedJobs=[];
-  Object.values(jobCategories).forEach(cat=>{
-    if(!Array.isArray(cat)){
-      Object.values(cat).forEach(sub=>selectedJobs.push(...sub));
-    } else selectedJobs.push(...cat);
-  });
-  updateCard();
-}
-
-function clearJobs(){ selectedJobs=[]; updateCard(); }
-
-function loadImage(e){
-  let r=new FileReader();
-  r.onload=e=>document.getElementById("bgImage").src=e.target.result;
-  r.readAsDataURL(e.target.files[0]);
-}
-
-function saveImage(){
-  html2canvas(document.querySelector(".card"),{scale:2}).then(c=>{
-    let a=document.createElement("a");
-    a.download="character.png";
-    a.href=c.toDataURL();
-    a.click();
+function saveCard(){
+  html2canvas(document.getElementById('card')).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'character.png';
+    link.href = canvas.toDataURL();
+    link.click();
   });
 }
-
-function updateTitle(){
-  document.getElementById("mainTitle").innerText=
-    document.getElementById("titleInput").value||"EORZEAN";
-}
-
 </script>
 
 </body>
