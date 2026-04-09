@@ -282,9 +282,8 @@ input[type="file"] {
 
 /* 잡 아이콘 — 중앙 원 안에 */
 .job-meteor .job-fg {
-  position: absolute;
-  width: 52%;
-  height: 52%;
+  width: 45%;   /* 52% → 45% 로 줄이기 */
+  height: 45%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -348,6 +347,21 @@ input[type="file"] {
   margin-top: 4px;
   font-size: 13px;
   letter-spacing: 0.05em;
+}
+
+   /* 직업 섹션 버튼 */
+.section button {
+  padding: 7px;
+  background: #222;
+  border: 1px solid #444;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  flex: 1;
+}
+
+.section button:hover {
+  background: #333;
 }
 </style>
 </head>
