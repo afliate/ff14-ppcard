@@ -700,18 +700,26 @@ function renderJobSelect() {
 }
 
 function toggleJob(job) {
-if (!selectedJobs.includes(job)) {
-  selectedJobs.push(job);
-} else {
-  mainJob = job;
+function toggleJob(job) {
+  if (!selectedJobs.includes(job)) {
+    selectedJobs.push(job);
+  } else {
+    mainJob = job;
+  }
+  updateSelectionUI();
+  updateCard();
 }
-updateCard();
 
 function updateSelectionUI() {
   document.querySelectorAll(".job-icon").forEach(el => {
     const job = el.id.replace("icon-", "");
-    if (job === mainJob)           el.classList.add("main-selected");
-    else if (selectedJobs.includes(job)) el.classList.add("selected");
+    el.classList.remove("selected", "main-selected");
+
+    if (job === mainJob) {
+      el.classList.add("main-selected");
+    } else if (selectedJobs.includes(job)) {
+      el.classList.add("selected");
+    }
   });
 }
 
@@ -772,11 +780,6 @@ function loadBgImage(event) {
   reader.readAsDataURL(file);
 }
 
-function setLineArt(job) {
-  const la = document.getElementById("lineArt");
-  la.src = `images/jobs/CL/${job}.png`;
-  la.style.display = "block";
-}
 
 function startDrag(e) {
   isDragging = true;
@@ -861,9 +864,11 @@ function saveImage() {
   
 /* ── 초기 실행 ── */
 renderJobSelect();
+renderLineArtSelect();  
 drawBarcode();
 updateCard();
 fitPreview();
+  
 window.addEventListener("resize", fitPreview);
 </script>
 </body>
